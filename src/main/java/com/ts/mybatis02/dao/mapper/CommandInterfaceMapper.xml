@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间-->
+<mapper namespace="com.ts.mybatis02.dao.CommandInterfaceMapper">
+    <sql id="SelectSql">c.id,c.name,c.description,cc.content,cc.id c_id</sql>
+    <resultMap type="com.ts.mybatis02.bean.Command" id="CommandResult">
+        <!--column 数据库中的字段名，property java对应得属性名，id为主键-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <collection property="contents" resultMap="CommandContent.contentResult"/>
+    </resultMap>
+
+    <!--查询所有command信息-->
+    <!--resultMap的值对应id唯一-->
+    <select id="queryCommandList" resultMap="CommandResult">
+        /*注意查询的时候一定要查询 cc.id c_id 不然对象集合里面只有一条数据*/
+        select <include refid="SelectSql"></include>  from command c LEFT JOIN command_content cc on c.id =
+        cc.command_id WHERE 1=1
+        <!--<if test="command!=null and !''.equals(name.trim()) ">
+          and  c.name = '${name}'
+        </if>
+        <if test="contents!=null and !''.equals(contents.trim()) ">
+          and  cc.content like  '%${content}%'
+        </if>-->
+    </select>
+    <!--这两个都可以 delete from message where id = ${_prarmeter}-->
+    <delete id="delete" parameterType="String">
+        delete from message where id = #{id}
+    </delete>
+    <delete id="deleteBatch" parameterType="java.util.List">
+        delete from message where id in (
+        <foreach collection="list" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </delete>
+    <!--分页-->
+    <!--<select id="queryCommandListByPage" parameterType="java.util.Map" resultMap="command">
+      select a.id c_id,a.name,a.description,b.content,b.id,b.command_id
+      from command a left join command_content b
+      on a.id=b.command_id
+      <where>
+        <if test="command.name != null and !''.equals(command.name.trim())">
+          and a.name=#{command.name}
+        </if>
+        <if test="command.description != null and !''.equals(command.description.trim())">
+          and a.description like '%' #{command.description} '%'
+        </if>
+      </where>
+    </select>-->
+    <!--<select id="version" parameterType="long" resultType="int">
+      SELECT version FROM user WHERE id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="UserAlias">
+      DELETE FROM user WHERE id = #{id:INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="UserAlias" useGeneratedKeys="false">
+      INSERT INTO user
+      ( id,
+      username,
+      password,
+      administrator
+      )
+      VALUES
+      ( #{id},
+      #{username,jdbcType=VARCHAR},
+      #{password.encrypted:VARCHAR},
+      #{administrator,jdbcType=BOOLEAN}
+      )
+    </insert>
+
+    <update id="update" parameterType="UserAlias">
+      UPDATE user SET
+      username = #{username,jdbcType=VARCHAR},
+      password = #{password.encrypted,jdbcType=VARCHAR},
+      administrator = #{administrator,jdbcType=BOOLEAN}
+      WHERE
+      id = #{id,jdbcType=INTEGER}
+    </update>
+
+    &lt;!&ndash;   Unique constraint check &ndash;&gt;
+    <select id="isUniqueUsername" parameterType="map" resultType="boolean">
+      SELECT (count(*) = 0)
+      FROM user
+      WHERE ((#{userId,jdbcType=BIGINT} IS NOT NULL AND id != #{userId,jdbcType=BIGINT}) OR #{userId,jdbcType=BIGINT} IS
+      NULL)  &lt;!&ndash; other than me &ndash;&gt;
+      AND (username = #{username,jdbcType=VARCHAR})
+    </select>-->
+</mapper>

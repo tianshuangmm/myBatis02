@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间-->
+<mapper namespace="CommandContent">
+    <!--type的值对应的javabean，必需填写全路径或者定义的别名-->
+    <resultMap type="com.ts.mybatis02.bean.CommandContent" id="contentResult">
+        <!--column 数据库中的字段名，property java对应得属性名，id为主键-->
+        <id column="c_id" jdbcType="INTEGER" property="id"/>
+        <result column="command_id" jdbcType="INTEGER" property="command_id"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+    </resultMap>
+
+
+</mapper>

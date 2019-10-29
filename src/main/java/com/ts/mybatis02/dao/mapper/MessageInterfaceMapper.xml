@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间-->
+<mapper namespace="com.ts.mybatis02.dao.MessageInterfaceMapper">
+    <!--type的值对应的javabean，必需填写全路径或者定义的别名-->
+    <resultMap type="com.ts.mybatis02.bean.Message" id="MessageResult">
+        <!--column 数据库中的字段名，property java对应得属性名，id为主键-->
+        <id column="ID" jdbcType="INTEGER" property="id"/>
+        <result column="COMMAND" jdbcType="VARCHAR" property="command"/>
+        <result column="DESCRIPTION" jdbcType="VARCHAR" property="description"/>
+        <result column="CONTENT" jdbcType="VARCHAR" property="content"/>
+    </resultMap>
+
+    <!--resultMap的值对应id唯一-->
+    <select id="queryMessageList" parameterType="com.ts.mybatis02.bean.Message" resultMap="MessageResult">
+        SELECT ID,COMMAND,DESCRIPTION,CONTENT FROM Message WHERE 1=1
+        <if test="command!=null and !''.equals(command.trim()) ">
+            and command = '${command}'
+        </if>
+        <if test="content!=null and !''.equals(content.trim()) ">
+            and content like '%${content}%'
+        </if>
+    </select>
+    <!--这两个都可以 delete from message where id = ${_prarmeter}-->
+    <delete id="delete" parameterType="String">
+        delete from message where id = #{id}
+    </delete>
+    <delete id="deleteBatch" parameterType="java.util.List">
+        delete from message where id in (
+        <foreach collection="list" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </delete>
+    <!-- #{command}注意#避免出错-->
+    <!--useGeneratedKeys="true" keyProperty="id"获取自增主键-->
+    <!--useGeneratedKeys:设置是否使用JDBC的getGeneratedKeys方法获取主键并赋值到keyProperty设置的领域的模型属性中-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.ts.mybatis02.bean.Message">
+        INSERT INTO message(COMMAND,DESCRIPTION,CONTENT) VALUES ( #{command} , #{description} , #{content})
+    </insert>
+
+
+    <!--<select id="version" parameterType="long" resultType="int">
+      SELECT version FROM user WHERE id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="UserAlias">
+      DELETE FROM user WHERE id = #{id:INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="UserAlias" useGeneratedKeys="false">
+      INSERT INTO user
+      ( id,
+      username,
+      password,
+      administrator
+      )
+      VALUES
+      ( #{id},
+      #{username,jdbcType=VARCHAR},
+      #{password.encrypted:VARCHAR},
+      #{administrator,jdbcType=BOOLEAN}
+      )
+    </insert>
+
+    <update id="update" parameterType="UserAlias">
+      UPDATE user SET
+      username = #{username,jdbcType=VARCHAR},
+      password = #{password.encrypted,jdbcType=VARCHAR},
+      administrator = #{administrator,jdbcType=BOOLEAN}
+      WHERE
+      id = #{id,jdbcType=INTEGER}
+    </update>
+
+    &lt;!&ndash;   Unique constraint check &ndash;&gt;
+    <select id="isUniqueUsername" parameterType="map" resultType="boolean">
+      SELECT (count(*) = 0)
+      FROM user
+      WHERE ((#{userId,jdbcType=BIGINT} IS NOT NULL AND id != #{userId,jdbcType=BIGINT}) OR #{userId,jdbcType=BIGINT} IS
+      NULL)  &lt;!&ndash; other than me &ndash;&gt;
+      AND (username = #{username,jdbcType=VARCHAR})
+    </select>-->
+</mapper>
